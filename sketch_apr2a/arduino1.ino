@@ -1,5 +1,5 @@
 /*
- * Bearing Ball Sorting Machine
+ * Bearing Ball Sorting Machine Pt. 1
  * By Marcus Branton, Martin McCorkle, and Ben Anderson
  * 
  * 
@@ -90,7 +90,7 @@ void loop() {
     if (!isPaused) { 
         detectedColor = readColor();
         delay(10);
-        checkSortingConditions();
+        checkSortingConditions(); // what does this mean
 
         switch (detectedColor) { 
             case 1: // Background detected, no action
