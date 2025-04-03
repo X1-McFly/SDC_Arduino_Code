@@ -16,10 +16,10 @@
 
 #define DEBUG // uncomment to enable Serial debugging
 
-#define ARCHIMEDES_SCREW_1 0
-#define ARCHIMEDES_SCREW_2 0
-#define SOLENOID_1 0
-#define SOLENOID_2 0
+#define ARCHIMEDES_SCREW_1 0 // need to be properly defined
+#define ARCHIMEDES_SCREW_2 0 // need to be properly defined
+#define SOLENOID_1 0 // need to be properly defined
+#define SOLENOID_2 0 // need to be properly defined
 
 // Color sensor pins
 const int color_sens_pins[] = {39, 40, 41, 42};
