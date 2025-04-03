@@ -16,7 +16,12 @@ Arduino 1 Notes:
     - nylon
 3 limit switchs, when one is not depressed, this Arduino's program pauses (5 volts)
 
-(1 motor, 6 servos, 3 limit switches total)
+(1 motor, 2 solenoids, 6 servos, 3 limit switches total)
+3 connections to relay board - 1 motor, 2 solenoids
+5 for PWM - 3 big servos, 1 for small servos together, 1 for color sensor output
+10 for digital - 3 for relays, 4 for color sensor, 3 for limit switches
+
+
 
 Arduino 2 Notes:
 [ 0.5 - inch side ]
@@ -36,4 +41,7 @@ Arduino 2 Notes:
     - nylon
 3 limit switchs, when one is not depressed, this Arduino's program pauses (5 volts)
 
-(2 motors, 5 servos, 3 limit switches total)
+(2 motors, 2 solenoids, 5 servos, 3 limit switches total)
+4 connections to relay board - 2 motor, 2 solenoids
+4 for PWM - 2 big servos, 1 for small servos together, 1 for color sensor output
+11 for digital - 4 for relays, 4 for color sensor, 3 for limit switches

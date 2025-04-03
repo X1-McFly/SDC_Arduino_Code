@@ -139,8 +139,8 @@ int init_color_sens() {
     pinMode(SENSOR_OUT, INPUT);
 
     // Set color sensor frequency scaling
-    digitalWrite(color_sens_pins[0], HIGH); // pin 
-    digitalWrite(color_sens_pins[1], LOW); // pin 
+    digitalWrite(color_sens_pins[0], HIGH); // pin 39
+    digitalWrite(color_sens_pins[1], LOW); // pin 40
 
     #ifdef DEBUG
     Serial.println("Color sensor initialized successfully.");
@@ -235,8 +235,8 @@ int readColor() {
     int red = 0, green = 0, blue = 0;
 
     // Read Red component
-    digitalWrite(color_sens_pins[2], LOW); // pin 
-    digitalWrite(color_sens_pins[3], LOW); // pin 
+    digitalWrite(color_sens_pins[2], LOW); // pin 41
+    digitalWrite(color_sens_pins[3], LOW); // pin 42
     frequency = pulseIn(SENSOR_OUT, LOW);
     if (frequency == 0) {
         #ifdef DEBUG
