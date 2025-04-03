@@ -9,6 +9,10 @@
  * based on color detection.
  */
 
+ // relay pins: 22, 23, 24, 25, 26, 27, 28, 29
+ // servo pins: 8, 9, 10, 11
+ // color sensor pins: 39, 40, 41, 42
+ // limit switch pins: 36, 37, 38
 
 //uncomment include macros
 #include <Wire.h>
@@ -16,10 +20,10 @@
 
 #define DEBUG // uncomment to enable Serial debugging
 
-#define ARCHIMEDES_SCREW_1 0 // need to be properly defined
-#define ARCHIMEDES_SCREW_2 0 // need to be properly defined
-#define SOLENOID_1 0 // need to be properly defined
-#define SOLENOID_2 0 // need to be properly defined
+#define ARCHIMEDES_SCREW_1_RELAY_NUM 4
+#define ARCHIMEDES_SCREW_2_RELAY_NUM 5
+#define SOLENOID_1_RELAY_NUM 6
+#define SOLENOID_2_RELAY_NUM 7
 
 // Color sensor pins
 const int color_sens_pins[] = {39, 40, 41, 42};
@@ -338,20 +342,20 @@ void checkDrawers() {
 // this function need to be completed
 void pauseSorting() {
     isPaused = true;
-    digitalWrite(ARCHIMEDES_SCREW_1, LOW); // macro needs to be defined
-    digitalWrite(ARCHIMEDES_SCREW_2, LOW); // macro needs to be defined
-    digitalWrite(SOLENOID_1, LOW); // macro needs to be defined
-    digitalWrite(SOLENOID_2, LOW); // macro needs to be defined
+    digitalWrite(ARCHIMEDES_SCREW_1_RELAY_NUM, LOW); // macro needs to be defined
+    digitalWrite(ARCHIMEDES_SCREW_2_RELAY_NUM, LOW); // macro needs to be defined
+    digitalWrite(SOLENOID_1_RELAY_NUM, LOW); // macro needs to be defined
+    digitalWrite(SOLENOID_2_RELAY_NUM, LOW); // macro needs to be defined
     setChutes(90); // Close chute servos
 }
 
 // this function need to be completed
 void unpauseSorting() {
     isPaused = false;
-    digitalWrite(ARCHIMEDES_SCREW_1, HIGH); // macro needs to be defined
-    digitalWrite(ARCHIMEDES_SCREW_2, HIGH); // macro needs to be defined
-    digitalWrite(SOLENOID_1, HIGH); // macro needs to be defined
-    digitalWrite(SOLENOID_2, HIGH); // macro needs to be defined
+    digitalWrite(relayPins[ARCHIMEDES_SCREW_1_RELAY_NUM], HIGH);
+    digitalWrite(relayPins[ARCHIMEDES_SCREW_2_RELAY_NUM], HIGH);
+    digitalWrite(relayPins[SOLENOID_1_RELAY_NUM], HIGH);
+    digitalWrite(relayPins[SOLENOID_2_RELAY_NUM], HIGH);
     setChutes(0); // Close chute servos
 }
 
