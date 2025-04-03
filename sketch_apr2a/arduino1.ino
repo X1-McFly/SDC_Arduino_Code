@@ -68,7 +68,7 @@ void checkDrawers();
 void pauseSorting();
 void unpauseSorting();
 int setChutes(int angle);
-int checkSerial(bool blocking); // if blocking is true 'checkSerial()' will block the program from continuing until a command is received
+void checkSerial(bool blocking); // if blocking is true 'checkSerial()' will block the program from continuing until a command is received
 
 void setup() {
     Serial.begin(9600);
@@ -351,7 +351,7 @@ void unpauseSorting() {
     //digitalWrite(relayPins[ARCHIMEDES_SCREW_2_RELAY_NUM], HIGH);
     //digitalWrite(relayPins[SOLENOID_1_RELAY_NUM], HIGH);
     //digitalWrite(relayPins[SOLENOID_2_RELAY_NUM], HIGH);
-    digitalWrite(relayPins[2], HIGH) //Archimedes Screw
+    digitalWrite(relayPins[2], HIGH); //Archimedes Screw
     setChutes(0); // Open chute servos
 }
 
