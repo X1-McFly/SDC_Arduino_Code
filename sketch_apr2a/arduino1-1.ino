@@ -2,16 +2,15 @@
  * Bearing Ball Sorting Machine
  * By Marcus Branton, Martin McCorkle, and Ben Anderson
  * 
- * Last Updated April 2, 2025 by Martin McCorkle
  * 
  * Uses an Arduino Mega 2560 to control servos, solenoids, and sensors 
  * to sort different types of bearing balls (Steel, Brass, Nylon) 
  * based on color detection.
  */
 
- // relay pins: 22, 23, 24, 25, 26, 27, 28, 29
+ // relay pins: 22, 23, 24
  // servo pins: 8, 9, 10, 11
- // color sensor pins: 39, 40, 41, 42
+ // color sensor pins: 39 (S0), 40 (S1), 41 (S2), 42 (S3), 2 (PWM) (OUTPUT)
  // limit switch pins: 36, 37, 38
 
 //uncomment include macros
@@ -20,10 +19,9 @@
 
 #define DEBUG // uncomment to enable Serial debugging
 
-#define ARCHIMEDES_SCREW_1_RELAY_NUM 4 //pin 26 Digital
-#define ARCHIMEDES_SCREW_2_RELAY_NUM 5 //pin 27 Digital
-#define SOLENOID_1_RELAY_NUM 6 //pin 28 Digital
-#define SOLENOID_2_RELAY_NUM 7 //pin 29 Digital
+#define ARCHIMEDES_SCREW_1_RELAY_NUM 2 //pin 22 Digital
+#define SOLENOID_1_RELAY_NUM 0 //pin 23 Digital
+#define SOLENOID_2_RELAY_NUM 1 //pin 24 Digital
 
 // Color sensor pins
 const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
@@ -81,11 +79,11 @@ void setup() {
 
         if (command == "START") { 
             isPaused = false;  // Set the flag to start the system
-            stopGateServo.write(0); // Move servo to 0 degrees
+            hopperGateServo.write(0); // Move servo to 0 degrees
             Serial.println("Sorting started!");
         } else if (command == "RESET") {
             isPaused = true; // Stop the system
-            stopGateServo.write(180); // Move servo to 180 degrees
+            hopperGateServo.write(180); // Move servo to 180 degrees
             Serial.println("Sorting reset.");
         }
     }
@@ -341,25 +339,30 @@ void checkDrawers() {
 // this function need to be completed
 void pauseSorting() {
     isPaused = true;
-    digitalWrite(ARCHIMEDES_SCREW_1_RELAY_NUM, LOW); // macro needs to be defined
-    digitalWrite(ARCHIMEDES_SCREW_2_RELAY_NUM, LOW); // macro needs to be defined
-    digitalWrite(SOLENOID_1_RELAY_NUM, LOW); // macro needs to be defined
-    digitalWrite(SOLENOID_2_RELAY_NUM, LOW); // macro needs to be defined
+    //digitalWrite(ARCHIMEDES_SCREW_1_RELAY_NUM, LOW); // macro needs to be defined
+    //digitalWrite(ARCHIMEDES_SCREW_2_RELAY_NUM, LOW); // macro needs to be defined
+    //digitalWrite(SOLENOID_1_RELAY_NUM, LOW); // macro needs to be defined
+    //digitalWrite(SOLENOID_2_RELAY_NUM, LOW); // macro needs to be defined
+    digitalWrite(relayPins[1], HIGH); //Exit Solenoid
+    //digitalWrite(relayPins[0], LOW);
+    digitalWrite(relayPins[2], LOW); //Archimedes Screw
     setChutes(90); // Close chute servos
 }
 
 // this function need to be completed
 void unpauseSorting() {
     isPaused = false;
-    digitalWrite(relayPins[ARCHIMEDES_SCREW_1_RELAY_NUM], HIGH);
-    digitalWrite(relayPins[ARCHIMEDES_SCREW_2_RELAY_NUM], HIGH);
-    digitalWrite(relayPins[SOLENOID_1_RELAY_NUM], HIGH);
-    digitalWrite(relayPins[SOLENOID_2_RELAY_NUM], HIGH);
-    setChutes(0); // Close chute servos
+    //digitalWrite(relayPins[ARCHIMEDES_SCREW_1_RELAY_NUM], HIGH);
+    //digitalWrite(relayPins[ARCHIMEDES_SCREW_2_RELAY_NUM], HIGH);
+    //digitalWrite(relayPins[SOLENOID_1_RELAY_NUM], HIGH);
+    //digitalWrite(relayPins[SOLENOID_2_RELAY_NUM], HIGH);
+    digitalWrite(relayPins[2], HIGH) //Archimedes Screw
+    setChutes(0); // Open chute servos
 }
 
 // this function need to be completed
 int setChutes(int angle) {
-
-    return 1;
+    stopGateServo.write(angle);
+    return 0;
+    //return 1;
 }

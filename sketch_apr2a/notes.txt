@@ -6,7 +6,7 @@ Arduino 1 Notes:
 1 motor for Archimedes screw (12 volts)
 2 solenoids (12 volts)
 1 color sensor (5 volts)
-1 inductive proximity sensor
+[1 inductive proximity sensor]
 2 trap door servos (6 volts)
     - steel
     - brass
