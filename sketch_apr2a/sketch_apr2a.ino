@@ -75,6 +75,21 @@ void setup() {
 
 // recheck main loop
 void loop() {
+
+    if (Serial.available() > 0) {
+        String command = Serial.readStringUntil('\n'); // Read input until newline
+
+        if (command == "START") { 
+            isPaused = false;  // Set the flag to start the system
+            stopGateServo.write(0); // Move servo to 0 degrees
+            Serial.println("Sorting started!");
+        } else if (command == "RESET") {
+            isPaused = true; // Stop the system
+            stopGateServo.write(180); // Move servo to 180 degrees
+            Serial.println("Sorting reset.");
+        }
+    }
+    
     checkDrawers();
     if (!isPaused) { 
         detectedColor = readColor();
