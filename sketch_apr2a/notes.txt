@@ -1,4 +1,39 @@
 Arduino 1 Notes:
+[ 0.25 - inch side ]
 
+1 servo for hopper gate
+
+1 motor for Archimedes screw
+2 solenoids
+1 color sensor
+1 inductive proximity sensor
+2 trap door servos
+    - steel
+    - brass
+3 chute gate servos
+    - steel
+    - brass
+    - nylon
+3 limit switchs, when one is not depressed, this Arduino's program pauses
+
+(1 motor, 6 servos, 3 limit switches total)
 
 Arduino 2 Notes:
+[ 0.5 - inch side ]
+
+1 motor for hopper stirring claw
+
+1 motor for Archimedes screw
+2 solenoids
+1 color sensor
+
+2 trap door servos
+    - steel
+    - brass
+3 chute gate servos
+    - steel
+    - brass
+    - nylon
+3 limit switchs, when one is not depressed, this Arduino's program pauses
+
+(2 motors, 5 servos, 3 limit switches total)
