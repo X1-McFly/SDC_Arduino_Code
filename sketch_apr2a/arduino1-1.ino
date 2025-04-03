@@ -104,15 +104,16 @@ void loop() {
                 break;
 
             case 2: // Steel ball detected
-                processSorting(steelServo, 70);
+                processSorting(steelServo, 0);
                 break;
 
             case 3: // Brass ball detected
-                processSorting(brassServo, 70);
+                processSorting(brassServo, 0);
                 break;
 
             case 4: // Nylon ball detected (not sorted by servo)
-                processSorting(steelServo, 0); // Keep all servos closed
+                processSorting(steelServo, 90);
+                processSorting(brassServo, 90); // Keep all servos closed
                 break;
         }
     } else {
@@ -302,18 +303,19 @@ int readColor() {
 }
 
 void processSorting(Servo& servo, int angle) {
-    digitalWrite(relayPins[0], HIGH); // Close entrance
+    digitalWrite(relayPins[0], HIGH); // Close entrance solenoid
     delay(10);
-    checkSortingConditions();
+    //checkSortingConditions();
 
     servo.write(angle); // Move servo to sorting position
-    digitalWrite(relayPins[1], LOW); // Open exit
-    checkSortingConditions();
+    digitalWrite(relayPins[1], LOW); // Open exit solenoid
+    //checkSortingConditions();
 
     delay(SOLENOID_DELAY);
-    digitalWrite(relayPins[1], HIGH); // Close exit
+    digitalWrite(relayPins[1], HIGH); // Close exit solenoid
     delay(SOLENOID_DELAY);
     digitalWrite(relayPins[0], LOW); // Reopen entrance
+    servo.write(90); // 
 }
 
 // this function need to be completed
