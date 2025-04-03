@@ -1,0 +1,68 @@
+const int color_sens_pins[] = {39, 40, 41, 42};
+const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
+#define SENSOR_OUT 2
+
+int red = 0, green = 0, blue = 0;
+
+int detectedColor = 0;
+int frequency = 0;
+
+void loop {
+Serial.begin(9600);
+    // Read Red component
+    digitalWrite(color_sens_pins[2], LOW);
+    digitalWrite(color_sens_pins[3], LOW);
+    frequency = pulseIn(SENSOR_OUT, LOW);
+    if (frequency == 0) {
+        #ifdef DEBUG
+        Serial.println("ERROR: No signal from color sensor while reading RED.");
+        #endif
+        return 0; // Error state
+    }
+    red = frequency;
+    #ifdef DEBUG
+    Serial.print("R= "); Serial.print(red); Serial.print("  ");
+    #endif
+    delay(50);
+
+    // Read Green component
+    digitalWrite(color_sens_pins[2], HIGH);
+    digitalWrite(color_sens_pins[3], HIGH);
+    frequency = pulseIn(SENSOR_OUT, LOW);
+    if (frequency == 0) {
+        #ifdef DEBUG
+        Serial.println("ERROR: No signal from color sensor while reading GREEN.");
+        #endif
+        return 0; // Error state
+    }
+    green = frequency;
+    #ifdef DEBUG
+    Serial.print("G= "); Serial.print(green); Serial.print("  ");
+    #endif
+    delay(50);
+
+    // Read Blue component
+    digitalWrite(color_sens_pins[2], LOW);
+    digitalWrite(color_sens_pins[3], HIGH);
+    frequency = pulseIn(SENSOR_OUT, LOW);
+    if (frequency == 0) {
+        #ifdef DEBUG
+        Serial.println("ERROR: No signal from color sensor while reading BLUE.");
+        #endif
+        return 0; // Error state
+    }
+    blue = frequency;
+    #ifdef DEBUG
+    Serial.print("B= "); Serial.println(blue);
+    #endif
+    delay(50);
+
+    // Check if the color readings are within a valid range
+    if ((red < 0 || green < 0 || blue < 0) || 
+        (red > 255 || green > 255 || blue > 255)) { 
+        #ifdef DEBUG
+        Serial.println("WARNING: Color values out of expected range.");
+        #endif
+        return 0; // Error state
+    }
+}
