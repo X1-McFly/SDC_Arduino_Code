@@ -67,9 +67,12 @@ void checkDrawers();
 void pauseSorting();
 void unpauseSorting();
 int setChutes(int angle);
+void checkSerial();
 
 void setup() {
     Serial.begin(9600);
+
+    // checkSerial();
 
     init_color_sens();
     init_limit_switches();
@@ -79,21 +82,8 @@ void setup() {
 
 // recheck main loop
 void loop() {
+    checkSerial(); // Check for serial commands
 
-    if (Serial.available() > 0) {
-        String command = Serial.readStringUntil('\n'); // Read input until newline
-
-        if (command == "START") { 
-            isPaused = false;  // Set the flag to start the system
-            stopGateServo.write(0); // Move servo to 0 degrees
-            Serial.println("Sorting started!");
-        } else if (command == "RESET") {
-            isPaused = true; // Stop the system
-            stopGateServo.write(180); // Move servo to 180 degrees
-            Serial.println("Sorting reset.");
-        }
-    }
-    
     checkDrawers();
     if (!isPaused) { 
         detectedColor = readColor();
@@ -190,9 +180,10 @@ int init_relay_switches() {
     }
 
     // Set initial state of relays
-    digitalWrite(relayPins[0], HIGH); 
-    digitalWrite(relayPins[2], HIGH);
-    digitalWrite(relayPins[3], HIGH);
+    // WHAT IS THIS DOING?
+    digitalWrite(relayPins[0], HIGH); // check this pin
+    digitalWrite(relayPins[2], HIGH); // check this pin
+    digitalWrite(relayPins[3], HIGH); // check this pin
 
     #ifdef DEBUG
     Serial.println("Relay switches initialized successfully.");
@@ -363,4 +354,22 @@ void unpauseSorting() {
 int setChutes(int angle) {
 
     return 1;
+}
+
+void checkSerial() {
+    if (Serial.available() > 0) {
+        String command = Serial.readStringUntil('\n'); // Read input until newline
+
+        if (command == "START") { 
+            isPaused = false;  // Set the flag to start the system
+            stopGateServo.write(0); // Move servo to 0 degrees
+            Serial.println("Sorting started!");
+        } else if (command == "RESET") {
+            isPaused = true; // Stop the system
+            stopGateServo.write(180); // Move servo to 180 degrees
+            Serial.println("Sorting reset.");
+        } else {
+            Serial.println("Not a valid command. Please use START or RESET.");
+        }
+    }
 }
