@@ -20,15 +20,15 @@
 
 #define DEBUG // uncomment to enable Serial debugging
 
-#define ARCHIMEDES_SCREW_1_RELAY_NUM 4
-#define ARCHIMEDES_SCREW_2_RELAY_NUM 5
-#define SOLENOID_1_RELAY_NUM 6
-#define SOLENOID_2_RELAY_NUM 7
+#define ARCHIMEDES_SCREW_1_RELAY_NUM 4 //pin 26 Digital
+#define ARCHIMEDES_SCREW_2_RELAY_NUM 5 //pin 27 Digital
+#define SOLENOID_1_RELAY_NUM 6 //pin 28 Digital
+#define SOLENOID_2_RELAY_NUM 7 //pin 29 Digital
 
 // Color sensor pins
-const int color_sens_pins[] = {39, 40, 41, 42};
+const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
 const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
-#define SENSOR_OUT 2
+#define SENSOR_OUT 2 //pin 2 PWM
 
 // Servo motors
 Servo steelServo;
@@ -49,7 +49,7 @@ int detectedColor = 0;
 int frequency = 0;
 
 // Relay control pins
-const int relayPins[] = {22, 23, 24, 25}; 
+const int relayPins[] = {22, 23, 24}; 
 const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
 
 // states
@@ -75,10 +75,6 @@ void setup() {
     init_limit_switches();
     init_relay_switches();
     init_servos();
-}
-
-// recheck main loop
-void loop() {
 
     if (Serial.available() > 0) {
         String command = Serial.readStringUntil('\n'); // Read input until newline
@@ -93,7 +89,10 @@ void loop() {
             Serial.println("Sorting reset.");
         }
     }
-    
+}
+
+// recheck main loop
+void loop() {
     checkDrawers();
     if (!isPaused) { 
         detectedColor = readColor();
@@ -140,8 +139,8 @@ int init_color_sens() {
     pinMode(SENSOR_OUT, INPUT);
 
     // Set color sensor frequency scaling
-    digitalWrite(color_sens_pins[0], HIGH);
-    digitalWrite(color_sens_pins[1], LOW);
+    digitalWrite(color_sens_pins[0], HIGH); // pin 
+    digitalWrite(color_sens_pins[1], LOW); // pin 
 
     #ifdef DEBUG
     Serial.println("Color sensor initialized successfully.");
@@ -204,26 +203,26 @@ int init_relay_switches() {
 //recheck function
 int init_servos() {
     // Attach and reset servos
-    brassServo.attach(8);
-    brassServo.write(0);
+    brassServo.attach(8); // brass trap door
+    brassServo.write(90);
     #ifdef DEBUG
     Serial.println("Brass servo initialized successfully.");
     #endif
     
-    steelServo.attach(9);
-    steelServo.write(0);
+    steelServo.attach(9); // steel trap door
+    steelServo.write(90);
     #ifdef DEBUG
     Serial.println("Steel servo initialized successfully.");
     #endif
     
-    stopGateServo.attach(10);
-    stopGateServo.write(0);
+    stopGateServo.attach(10); // mini servos altogether
+    stopGateServo.write(90);
     #ifdef DEBUG
     Serial.println("stopGate servo initialized successfully.");
     #endif
 
     hopperGateServo.attach(11);
-    hopperGateServo.write(0);
+   // hopperGateServo.write(0); //0 - open , 180 - closed
     #ifdef DEBUG
     Serial.println("hopperGateServo servo initialized successfully.");
     #endif
@@ -236,8 +235,8 @@ int readColor() {
     int red = 0, green = 0, blue = 0;
 
     // Read Red component
-    digitalWrite(color_sens_pins[2], LOW);
-    digitalWrite(color_sens_pins[3], LOW);
+    digitalWrite(color_sens_pins[2], LOW); // pin 
+    digitalWrite(color_sens_pins[3], LOW); // pin 
     frequency = pulseIn(SENSOR_OUT, LOW);
     if (frequency == 0) {
         #ifdef DEBUG
