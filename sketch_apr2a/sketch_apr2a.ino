@@ -1,6 +1,6 @@
 /*
  * Bearing Ball Sorting Machine
- * By Marcus Branton and Martin McCorkle
+ * By Marcus Branton, Martin McCorkle, and Ben Anderson
  * 
  * Last Updated April 2, 2025 by Martin McCorkle
  * 
