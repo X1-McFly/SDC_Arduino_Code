@@ -225,59 +225,49 @@ int init_servos() {
 
 //recheck this function
 int readColor() {
-    int red = 0, green = 0, blue = 0;
 
-    // Read Red component
-    digitalWrite(color_sens_pins[2], LOW); // pin 41
-    digitalWrite(color_sens_pins[3], LOW); // pin 42
-    frequency = pulseIn(SENSOR_OUT, LOW);
-    if (frequency == 0) {
-        #ifdef DEBUG
-        Serial.println("ERROR: No signal from color sensor while reading RED.");
-        #endif
-        return 0; // Error state
-    }
-    red = frequency;
-    #ifdef DEBUG
-    Serial.print("R= "); Serial.print(red); Serial.print("  ");
-    #endif
-    delay(50);
-
-    // Read Green component
-    digitalWrite(color_sens_pins[2], HIGH);
-    digitalWrite(color_sens_pins[3], HIGH);
-    frequency = pulseIn(SENSOR_OUT, LOW);
-    if (frequency == 0) {
-        #ifdef DEBUG
-        Serial.println("ERROR: No signal from color sensor while reading GREEN.");
-        #endif
-        return 0; // Error state
-    }
-    green = frequency;
-    #ifdef DEBUG
-    Serial.print("G= "); Serial.print(green); Serial.print("  ");
-    #endif
-    delay(50);
-
-    // Read Blue component
-    digitalWrite(color_sens_pins[2], LOW);
-    digitalWrite(color_sens_pins[3], HIGH);
-    frequency = pulseIn(SENSOR_OUT, LOW);
-    if (frequency == 0) {
-        #ifdef DEBUG
-        Serial.println("ERROR: No signal from color sensor while reading BLUE.");
-        #endif
-        return 0; // Error state
-    }
-    blue = frequency;
-    #ifdef DEBUG
-    Serial.print("B= "); Serial.println(blue);
-    #endif
-    delay(50);
-
+  int redFrequency = 0;
+  int greenFrequency = 0;
+  int blueFrequency = 0;
+  
+    // Setting RED (R) filtered photodiodes to be read
+  digitalWrite(color_sens_pins[2], LOW); // pin 41
+  digitalWrite(color_sens_pins[3], LOW); // pin 42
+ 
+  // Reading the output frequency
+  redFrequency = pulseIn(SENSOR_OUT, LOW);
+ 
+   // Printing the RED (R) value
+  Serial.print("R = ");
+  Serial.print(redFrequency);
+  delay(100);
+ 
+  // Setting GREEN (G) filtered photodiodes to be read
+  digitalWrite(color_sens_pins[2], HIGH);
+  digitalWrite(color_sens_pins[3], HIGH);
+ 
+  // Reading the output frequency
+  greenFrequency = pulseIn(SENSOR_OUT, LOW);
+ 
+  // Printing the GREEN (G) value  
+  Serial.print(" G = ");
+  Serial.print(greenFrequency);
+  delay(100);
+ 
+  // Setting BLUE (B) filtered photodiodes to be read
+   digitalWrite(color_sens_pins[2], LOW);
+  digitalWrite(color_sens_pins[3], HIGH);
+ 
+  // Reading the output frequency
+  blueFrequency = pulseIn(SENSOR_OUT, LOW);
+ 
+  // Printing the BLUE (B) value
+  Serial.print(" B = ");
+  Serial.println(blueFrequency);
+  delay(100);
     // Check if the color readings are within a valid range
-    if ((red < 0 || green < 0 || blue < 0) || 
-        (red > 255 || green > 255 || blue > 255)) { 
+    if ((redFrequency < 0 || greenFrequency < 0 || blueFrequency < 0) || 
+        (redFrequency > 255 || greenFrequency > 255 || blueFrequency > 255)) { 
         #ifdef DEBUG
         Serial.println("WARNING: Color values out of expected range.");
         #endif
@@ -285,10 +275,10 @@ int readColor() {
     }
 
     // Determine ball type based on color thresholds (placeholders)
-    if (red < 45 && red > 32 && green < 65 && green > 55) return 1; // Background
-    if (green < 55 && green > 43 && blue < 47 && blue > 35) return 2; // Steel
-    if (red < 53 && red > 40 && green < 53 && green > 40) return 3; // Brass
-    if (red < 38 && red > 24 && green < 44 && green > 30) return 4; // Nylon
+    if (redFrequency < 45 && redFrequency > 32 && greenFrequency < 65 && greenFrequency > 55) return 1; // Background
+    if (greenFrequency < 55 && greenFrequency > 43 && blueFrequency < 47 && blueFrequency > 35) return 2; // Steel
+    if (redFrequency < 53 && redFrequency > 40 && greenFrequency < 53 && greenFrequency > 40) return 3; // Brass
+    if (redFrequency < 38 && redFrequency > 24 && greenFrequency < 44 && greenFrequency > 30) return 4; // Nylon
 
     #ifdef DEBUG
     Serial.println("INFO: Unknown color detected.");
