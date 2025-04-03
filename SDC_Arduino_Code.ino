@@ -11,10 +11,14 @@
  * Send "RESET" to stop the sorting process.
  */
 
+ // Arduino 1 pinout:
  // relay pins: 22, 23, 24
  // servo pins: 8, 9, 10, 11
  // color sensor pins: 39 (S0), 40 (S1), 41 (S2), 42 (S3), 2 (PWM) (OUTPUT)
  // limit switch pins: 36, 37, 38
+
+ // Arduino 2 pinout:
+ // !! ADD ARDUINO 2 PINOUTS HERE !!
 
 //uncomment include macros
 #include <Wire.h>
@@ -25,6 +29,9 @@
 // #define ARDUINO2
 
 #define DEBUG // uncomment to enable Serial debugging
+#ifdef DEBUG
+    #define LED_DEBUG_PIN 13 // Pin for LED debugging
+#endif
 
 // pinouts for Arduino 1 | !! Make sure this is correct !!
 #ifdef ARDUINO1
@@ -68,6 +75,8 @@
     const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
 #endif
 
+
+
 // Servo motors
 Servo steelServo;
 Servo brassServo;
@@ -98,6 +107,7 @@ void pauseSorting();
 void unpauseSorting();
 int setChutes(int angle);
 void checkSerial(bool blocking); // if blocking is true 'checkSerial()' will block the program from continuing until a command is received
+void blinkLED();
 
 void setup() {
     Serial.begin(9600);
@@ -113,10 +123,14 @@ void setup() {
 // recheck main loop
 void loop() {
 
+    blinkLED(); // if LED_DEBUG is defined, blink the LED. If not, do nothing.
     checkSerial(false); // Check for serial commands without blocking
     checkDrawers();
 
     if (!isPaused) { 
+        
+        // needs solenoid control first
+
         detectedColor = readColor();
         delay(10);
         checkSortingConditions(); // what does this mean
@@ -171,7 +185,6 @@ int init_color_sens() {
     return 0;
 }
 
-// recheck function
 int init_limit_switches() {
     // Initialize limit switch
     for (int i = 0; i < num_limit_sw; i++) {
@@ -222,7 +235,6 @@ int init_relay_switches() {
     return 0;
 }
 
-//recheck function
 int init_servos() {
     // Attach and reset servos
     brassServo.attach(8); // brass trap door
@@ -240,60 +252,64 @@ int init_servos() {
     stopGateServo.attach(10); // mini servos altogether
     stopGateServo.write(90);
     #ifdef DEBUG
-    Serial.println("stopGate servo initialized successfully.");
+    Serial.println("StopGate servo initialized successfully.");
     #endif
 
     hopperGateServo.attach(11);
-   // hopperGateServo.write(0); //0 - open , 180 - closed
     #ifdef DEBUG
-    Serial.println("hopperGateServo servo initialized successfully.");
+    Serial.println("HopperGate servo initialized successfully.");
     #endif
 
     return 0;  
 }
 
-//recheck this function
 int readColor() {
-
-  int redFrequency = 0;
-  int greenFrequency = 0;
-  int blueFrequency = 0;
+    int redFrequency = 0;
+    int greenFrequency = 0;
+    int blueFrequency = 0;
   
     // Setting RED (R) filtered photodiodes to be read
-  digitalWrite(color_sens_pins[2], LOW); // pin 41
-  digitalWrite(color_sens_pins[3], LOW); // pin 42
+    digitalWrite(color_sens_pins[2], LOW); // pin 41
+    digitalWrite(color_sens_pins[3], LOW); // pin 42
  
-  // Reading the output frequency
-  redFrequency = pulseIn(SENSOR_OUT, LOW);
+    // Reading the output frequency
+    redFrequency = pulseIn(SENSOR_OUT, LOW);
  
-   // Printing the RED (R) value
-  Serial.print("R = ");
-  Serial.print(redFrequency);
-  delay(100);
+    // Printing the RED (R) value
+    #ifdef DEBUG
+    Serial.print("R = ");
+    Serial.print(redFrequency);
+    #endif
+    delay(100);
  
-  // Setting GREEN (G) filtered photodiodes to be read
-  digitalWrite(color_sens_pins[2], HIGH);
-  digitalWrite(color_sens_pins[3], HIGH);
+    // Setting GREEN (G) filtered photodiodes to be read
+    digitalWrite(color_sens_pins[2], HIGH);
+    digitalWrite(color_sens_pins[3], HIGH);
  
-  // Reading the output frequency
-  greenFrequency = pulseIn(SENSOR_OUT, LOW);
+    // Reading the output frequency
+    greenFrequency = pulseIn(SENSOR_OUT, LOW);
  
-  // Printing the GREEN (G) value  
-  Serial.print(" G = ");
-  Serial.print(greenFrequency);
-  delay(100);
+    // Printing the GREEN (G) value  
+    #ifdef DEBUG
+    Serial.print(" G = ");
+    Serial.print(greenFrequency);
+    #endif
+    delay(100);
  
-  // Setting BLUE (B) filtered photodiodes to be read
-   digitalWrite(color_sens_pins[2], LOW);
-  digitalWrite(color_sens_pins[3], HIGH);
+    // Setting BLUE (B) filtered photodiodes to be read
+    digitalWrite(color_sens_pins[2], LOW);
+    digitalWrite(color_sens_pins[3], HIGH);
  
-  // Reading the output frequency
-  blueFrequency = pulseIn(SENSOR_OUT, LOW);
+    // Reading the output frequency
+    blueFrequency = pulseIn(SENSOR_OUT, LOW);
  
-  // Printing the BLUE (B) value
-  Serial.print(" B = ");
-  Serial.println(blueFrequency);
-  delay(100);
+    // Printing the BLUE (B) value
+    #ifdef DEBUG
+    Serial.print(" B = ");
+    Serial.println(blueFrequency);
+    #endif
+    delay(100);
+
     // Check if the color readings are within a valid range
     if ((redFrequency < 0 || greenFrequency < 0 || blueFrequency < 0) || 
         (redFrequency > 255 || greenFrequency > 255 || blueFrequency > 255)) { 
@@ -328,57 +344,63 @@ void processSorting(Servo& servo, int angle) {
     digitalWrite(relayPins[1], HIGH); // Close exit
     delay(SOLENOID_DELAY);
     digitalWrite(relayPins[0], LOW); // Reopen entrance
+
+    #ifdef DEBUG
+    Serial.println("Sorting process completed.");
+    #endif
 }
 
-// this function need to be completed
 void checkSortingConditions() {
-    // Placeholder function to handle conditions like pause or drawer removal
+    #ifdef DEBUG
+    Serial.println("Checking sorting conditions...");
+    #endif
 }
 
-// recheck this function
 void checkDrawers() {
     for (int i = 0; i < num_limit_sw; i++) {
         if (digitalRead(limit_sw_pins[i]) == HIGH) { // Check if HIGH is the right condition
+            #ifdef DEBUG
             Serial.println("Drawer removed! Pausing...");
+            #endif
             pauseSorting();
             delay(250);
             return;
-        }
-        else {
+        } else {
             unpauseSorting();
         }
     }
 }
 
-// this function need to be completed
 void pauseSorting() {
     isPaused = true;
-    //digitalWrite(ARCHIMEDES_SCREW_1_RELAY_NUM, LOW); // macro needs to be defined
-    //digitalWrite(ARCHIMEDES_SCREW_2_RELAY_NUM, LOW); // macro needs to be defined
-    //digitalWrite(SOLENOID_1_RELAY_NUM, LOW); // macro needs to be defined
-    //digitalWrite(SOLENOID_2_RELAY_NUM, LOW); // macro needs to be defined
-    digitalWrite(relayPins[1], HIGH); //Exit Solenoid
-    //digitalWrite(relayPins[0], LOW);
-    digitalWrite(relayPins[2], LOW); //Archimedes Screw
+    digitalWrite(relayPins[1], HIGH); // Exit Solenoid
+    digitalWrite(relayPins[2], LOW); // Archimedes Screw
     setChutes(90); // Close chute servos
+
+    #ifdef DEBUG
+    Serial.println("Sorting paused.");
+    #endif
 }
 
-// this function need to be completed
 void unpauseSorting() {
     isPaused = false;
-    //digitalWrite(relayPins[ARCHIMEDES_SCREW_1_RELAY_NUM], HIGH);
-    //digitalWrite(relayPins[ARCHIMEDES_SCREW_2_RELAY_NUM], HIGH);
-    //digitalWrite(relayPins[SOLENOID_1_RELAY_NUM], HIGH);
-    //digitalWrite(relayPins[SOLENOID_2_RELAY_NUM], HIGH);
-    digitalWrite(relayPins[2], HIGH); //Archimedes Screw
+    digitalWrite(relayPins[2], HIGH); // Archimedes Screw
     setChutes(0); // Open chute servos
+
+    #ifdef DEBUG
+    Serial.println("Sorting resumed.");
+    #endif
 }
 
-// this function need to be completed
 int setChutes(int angle) {
     stopGateServo.write(angle);
+
+    #ifdef DEBUG
+    Serial.print("Chutes set to angle: ");
+    Serial.println(angle);
+    #endif
+
     return 0;
-    //return 1;
 }
 
 void checkSerial(bool blocking) {
@@ -391,14 +413,28 @@ void checkSerial(bool blocking) {
             if (command == "START") { 
                 isPaused = false;
                 stopGateServo.write(0);
+                #ifdef DEBUG
                 Serial.println("Sorting started!");
+                #endif
             } else if (command == "RESET") {
                 isPaused = true;
                 stopGateServo.write(180);
+                #ifdef DEBUG
                 Serial.println("Sorting reset.");
+                #endif
             } else {
+                #ifdef DEBUG
                 Serial.println("Not a valid command. Please use START or RESET.");
+                #endif
             }
         }
     } while (blocking && Serial.available() == 0);
+}
+
+void blinkLED() {
+    #ifdef DEBUG
+    digitalWrite(LED_DEBUG_PIN, HIGH);
+    delay(100);
+    digitalWrite(LED_DEBUG_PIN, LOW);
+    #endif
 }
