@@ -16,6 +16,11 @@
 
 #define DEBUG // uncomment to enable Serial debugging
 
+#define ARCHIMEDES_SCREW_1 0
+#define ARCHIMEDES_SCREW_2 0
+#define SOLENOID_1 0
+#define SOLENOID_2 0
+
 // Color sensor pins
 const int color_sens_pins[] = {39, 40, 41, 42};
 const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
@@ -57,7 +62,7 @@ void checkSortingConditions();
 void checkDrawers();
 void pauseSorting();
 void unpauseSorting();
-int setChutes();
+int setChutes(int angle);
 
 void setup() {
     Serial.begin(9600);
@@ -116,8 +121,8 @@ int init_color_sens() {
     pinMode(SENSOR_OUT, INPUT);
 
     // Set color sensor frequency scaling
-    digitalWrite(COLOR_S0, HIGH);
-    digitalWrite(COLOR_S1, LOW);
+    digitalWrite(color_sens_pins[0], HIGH);
+    digitalWrite(color_sens_pins[1], LOW);
 
     #ifdef DEBUG
     Serial.println("Color sensor initialized successfully.");
@@ -336,7 +341,7 @@ void unpauseSorting() {
 }
 
 // this function need to be completed
-int setChutes() {
+int setChutes(int angle) {
 
     return 1;
 }
