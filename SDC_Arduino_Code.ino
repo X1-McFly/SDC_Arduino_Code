@@ -1,5 +1,5 @@
 /*
- * Bearing Ball Sorting Machine Pt. 1
+ * Bearing Ball Sorting Machine
  * By Marcus Branton, Martin McCorkle, and Ben Anderson
  * 
  * 
@@ -20,16 +20,53 @@
 #include <Wire.h>
 #include <Servo.h>
 
-// #define DEBUG // uncomment to enable Serial debugging
+// !!IMPORTANT!! -> uncomment the appropriate board type and comment out the other when programming.
+#define ARDUINO1
+// #define ARDUINO2
 
-#define ARCHIMEDES_SCREW_1_RELAY_NUM 2 //pin 22 Digital
-#define SOLENOID_1_RELAY_NUM 0 //pin 23 Digital
-#define SOLENOID_2_RELAY_NUM 1 //pin 24 Digital
+#define DEBUG // uncomment to enable Serial debugging
 
-// Color sensor pins
-const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
-const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
-#define SENSOR_OUT 2 //pin 2 PWM
+// pinouts for Arduino 1 | !! Make sure this is correct !!
+#ifdef ARDUINO1
+
+    #define ARCHIMEDES_SCREW_1_RELAY_NUM 2 //pin 22 Digital
+    #define SOLENOID_1_RELAY_NUM 0 //pin 23 Digital
+    #define SOLENOID_2_RELAY_NUM 1 //pin 24 Digital
+
+    // Color sensor pins
+    const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
+    const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
+    #define SENSOR_OUT 2 //pin 2 PWM
+
+    // Limit switch for detection (limit switches are for drawers)
+    const int limit_sw_pins[] = {36, 37, 38};
+    const int num_limit_sw = sizeof(limit_sw_pins) / sizeof(limit_sw_pins[0]);
+
+    // Relay control pins
+    const int relayPins[] = {22, 23, 24}; 
+    const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
+
+#endif
+
+// pinouts for Arduino 2 | !! Make sure this is correct !!
+#ifdef ARDUINO2
+    #define ARCHIMEDES_SCREW_1_RELAY_NUM 2 //pin 22 Digital
+    #define SOLENOID_1_RELAY_NUM 0 //pin 23 Digital
+    #define SOLENOID_2_RELAY_NUM 1 //pin 24 Digital
+
+    // Color sensor pins
+    const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
+    const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
+    #define SENSOR_OUT 2 //pin 2 PWM
+
+    // Limit switch for detection (limit switches are for drawers)
+    const int limit_sw_pins[] = {36, 37, 38};
+    const int num_limit_sw = sizeof(limit_sw_pins) / sizeof(limit_sw_pins[0]);
+
+    // Relay control pins
+    const int relayPins[] = {22, 23, 24}; 
+    const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
+#endif
 
 // Servo motors
 Servo steelServo;
@@ -41,17 +78,9 @@ Servo hopperGateServo;
 // Solenoid delay time
 const int SOLENOID_DELAY = 500; // make shorter if possible
 
-// Limit switch for detection (limit switches are for drawers)
-const int limit_sw_pins[] = {36, 37, 38};
-const int num_limit_sw = sizeof(limit_sw_pins) / sizeof(limit_sw_pins[0]);
-
 // Color detection variables
 int detectedColor = 0;
 int frequency = 0;
-
-// Relay control pins
-const int relayPins[] = {22, 23, 24}; 
-const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
 
 // states
 bool isPaused = false;
