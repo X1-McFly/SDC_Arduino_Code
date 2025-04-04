@@ -29,9 +29,6 @@
 // #define ARDUINO2
 
 #define DEBUG // uncomment to enable Serial debugging
-#ifdef DEBUG
-    #define LED_DEBUG_PIN 13 // Pin for LED debugging
-#endif
 
 // pinouts for Arduino 1 | !! Make sure this is correct !!
 #ifdef ARDUINO1
@@ -57,25 +54,26 @@
 
 // pinouts for Arduino 2 | !! Make sure this is correct !!
 #ifdef ARDUINO2
-    #define ARCHIMEDES_SCREW_1_RELAY_NUM 2 //pin 22 Digital
-    #define SOLENOID_1_RELAY_NUM 0 //pin 23 Digital
-    #define SOLENOID_2_RELAY_NUM 1 //pin 24 Digital
+    // #define ARCHIMEDES_SCREW_1_RELAY_NUM 2 //pin 22 Digital
+    // #define SOLENOID_1_RELAY_NUM 0 //pin 23 Digital
+    // #define SOLENOID_2_RELAY_NUM 1 //pin 24 Digital
 
-    // Color sensor pins
-    const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
-    const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
-    #define SENSOR_OUT 2 //pin 2 PWM
+    // // Color sensor pins
+    // const int color_sens_pins[] = {39, 40, 41, 42}; //Digital
+    // const int num_color_sens_pins = sizeof(color_sens_pins) / sizeof(color_sens_pins[0]); // gets the amount of pins
+    // #define SENSOR_OUT 2 //pin 2 PWM
 
-    // Limit switch for detection (limit switches are for drawers)
-    const int limit_sw_pins[] = {36, 37, 38};
-    const int num_limit_sw = sizeof(limit_sw_pins) / sizeof(limit_sw_pins[0]);
+    // // Limit switch for detection (limit switches are for drawers)
+    // const int limit_sw_pins[] = {36, 37, 38};
+    // const int num_limit_sw = sizeof(limit_sw_pins) / sizeof(limit_sw_pins[0]);
 
-    // Relay control pins
-    const int relayPins[] = {22, 23, 24}; 
-    const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
+    // // Relay control pins
+    // const int relayPins[] = {22, 23, 24}; 
+    // const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
 #endif
 
-
+// Solenoid delay time
+#define SOLENOID_DELAY 500 // make shorter if possible
 
 // Servo motors
 Servo steelServo;
@@ -84,15 +82,12 @@ Servo nylonServo;
 Servo stopGateServo;
 Servo hopperGateServo;
 
-// Solenoid delay time
-const int SOLENOID_DELAY = 500; // make shorter if possible
-
 // Color detection variables
 int detectedColor = 0;
-int frequency = 0;
+int frequency = 0; // is this needed? It's not used anywhere...
 
 // states
-bool isPaused = false;
+bool isPaused = true;
 
 // define functions
 int init_color_sens();
@@ -106,13 +101,18 @@ void checkDrawers();
 void pauseSorting();
 void unpauseSorting();
 int setChutes(int angle);
-void checkSerial(bool blocking); // if blocking is true 'checkSerial()' will block the program from continuing until a command is received
+// int checkSerial(bool blocking); // if blocking is true 'checkSerial()' will block the program from continuing until a command is received
 void blinkLED();
 
 void setup() {
     Serial.begin(9600);
-
-    checkSerial(true); // Check for serial commands and block until one is received
+    
+    #ifdef DEBUG
+    pinMode(LED_BUILTIN, OUTPUT);
+    delay(500);
+    Serial.println("Initializing...");
+    // checkSerial(true); // Check for serial commands and block until one is received
+    #endif
 
     init_color_sens();
     init_limit_switches();
@@ -122,9 +122,9 @@ void setup() {
 
 // recheck main loop
 void loop() {
-
+    delay(100);
     blinkLED(); // if LED_DEBUG is defined, blink the LED. If not, do nothing.
-    checkSerial(false); // Check for serial commands without blocking
+    // checkSerial(false); // Check for serial commands without blocking
     checkDrawers();
 
     if (!isPaused) { 
@@ -133,12 +133,12 @@ void loop() {
 
         detectedColor = readColor();
         delay(10);
-        checkSortingConditions(); // what does this mean
+        // checkSortingConditions(); // what does this mean
 
         switch (detectedColor) { 
             case 1: // Background detected, no action
                 delay(30); 
-                checkSortingConditions();
+                // checkSortingConditions();
                 break;
 
             case 2: // Steel ball detected
@@ -154,7 +154,7 @@ void loop() {
                 break;
         }
     } else {
-        checkSortingConditions();
+        // checkSortingConditions();
     }
 }
 
@@ -358,7 +358,7 @@ void checkSortingConditions() {
 
 void checkDrawers() {
     for (int i = 0; i < num_limit_sw; i++) {
-        if (digitalRead(limit_sw_pins[i]) == HIGH) { // Check if HIGH is the right condition
+        if (digitalRead(limit_sw_pins[i]) == LOW) { // Check if LOW is the right condition
             #ifdef DEBUG
             Serial.println("Drawer removed! Pausing...");
             #endif
@@ -366,7 +366,7 @@ void checkDrawers() {
             delay(250);
             return;
         } else {
-            unpauseSorting();
+            // unpauseSorting();
         }
     }
 }
@@ -403,38 +403,40 @@ int setChutes(int angle) {
     return 0;
 }
 
-void checkSerial(bool blocking) {
-    do {
-        if (Serial.available()) {
-            String command = Serial.readStringUntil('\n');
+// int checkSerial(bool blocking) {
+//     do {
+//         if (Serial.available()) {
+//             String command = Serial.readStringUntil('\n');
 
-            command.trim(); // Remove trailing \r or whitespace
+//             command.trim(); // Remove trailing \r or whitespace
 
-            if (command == "START") { 
-                isPaused = false;
-                stopGateServo.write(0);
-                #ifdef DEBUG
-                Serial.println("Sorting started!");
-                #endif
-            } else if (command == "RESET") {
-                isPaused = true;
-                stopGateServo.write(180);
-                #ifdef DEBUG
-                Serial.println("Sorting reset.");
-                #endif
-            } else {
-                #ifdef DEBUG
-                Serial.println("Not a valid command. Please use START or RESET.");
-                #endif
-            }
-        }
-    } while (blocking && Serial.available() == 0);
-}
+//             if (command == "START") { 
+//                 isPaused = false;
+//                 stopGateServo.write(0);
+//                 #ifdef DEBUG
+//                 Serial.println("Sorting started!");
+//                 #endif
+//             } else if (command == "RESET") {
+//                 isPaused = true;
+//                 stopGateServo.write(180);
+//                 #ifdef DEBUG
+//                 Serial.println("Sorting reset.");
+//                 #endif
+//             } else if (command == "STOP") {
+//                 checkSerial(true);
+//             } else {
+//                 #ifdef DEBUG
+//                 Serial.println("Not a valid command. Please use START or RESET.");
+//                 #endif
+//             }
+//         }
+//     } while (blocking && Serial.available() == 0);
+// }
 
 void blinkLED() {
     #ifdef DEBUG
-    digitalWrite(LED_DEBUG_PIN, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
-    digitalWrite(LED_DEBUG_PIN, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     #endif
 }
