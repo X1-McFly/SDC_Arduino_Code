@@ -1,4 +1,4 @@
-Arduino 1 Notes:
+Arduino 1 (MEGA) Notes:
 [ 0.25 - inch side ]
 
 1 servo for hopper gate (6 volts)
@@ -23,7 +23,7 @@ Arduino 1 Notes:
 
 
 
-Arduino 2 Notes:
+Arduino 2 (UNO) Notes:
 [ 0.5 - inch side ]
 
 1 motor for hopper stirring claw (12 volts)
