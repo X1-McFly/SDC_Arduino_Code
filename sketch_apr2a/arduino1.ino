@@ -50,7 +50,7 @@ int detectedColor = 0;
 int frequency = 0;
 
 // Relay control pins
-const int relayPins[] = {22, 23, 24}; 
+const int relayPins[] = {4, 5, 6, 7}; //7 is mixer motor
 const int NUM_RELAYS = sizeof(relayPins) / sizeof(relayPins[0]);
 
 // states
