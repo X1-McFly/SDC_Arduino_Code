@@ -84,7 +84,10 @@ void setup() {
 // recheck main loop
 void loop() {
 
-
+    openSensorGate();
+    Serial.println(readColor());
+    // delay(500);
+    closeSensorGate();
 
 
     // checkSerial(false); // Check for serial commands without blocking
@@ -284,14 +287,14 @@ int readColor() {
         #ifdef DEBUG
         Serial.println("WARNING: Color values out of expected range.");
         #endif
-        return 0; // Error state
+        // return 0; // Error state
     }
 
     // Determine ball type based on color thresholds (placeholders)
     if (red < 45 && red > 32 && green < 65 && green > 55) return 1; // Background
-    if (green < 55 && green > 43 && blue < 47 && blue > 35) return 2; // Steel
-    if (red < 53 && red > 40 && green < 53 && green > 40) return 3; // Brass
-    if (red < 38 && red > 24 && green < 44 && green > 30) return 4; // Nylon
+    if (green < 9200 && green > 7500 && blue < 9200 && blue > 7500) return 2; // Steel
+    if (red < 12000 && red > 11500 && green < 13500 && green > 11000) return 3; // Brass
+    if (red < 5500 && red > 4500 && green < 5500 && green > 4500) return 4; // Nylon
 
     #ifdef DEBUG
     Serial.println("INFO: Unknown color detected.");
@@ -386,3 +389,18 @@ void checkSerial(bool blocking) {
         }
     } while (blocking && Serial.available() == 0);
 }
+
+void openSensorGate() {
+    digitalWrite(13,LOW);
+    digitalWrite(7, LOW);
+    // delay(100);
+    digitalWrite(7,HIGH);
+    delay(300);
+    digitalWrite(7,LOW);
+  }
+  
+  void closeSensorGate() {
+    delay(500);
+    digitalWrite(13, HIGH);
+    delay(500);
+  }
