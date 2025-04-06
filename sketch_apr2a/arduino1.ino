@@ -73,7 +73,7 @@ int checkSerial(bool blocking); // if blocking is true 'checkSerial()' will bloc
 void setup() {
     Serial.begin(9600);
 
-    checkSerial(true); // Check for serial commands and block until one is received
+    // checkSerial(true); // Check for serial commands and block until one is received
 
     init_color_sens();
     init_limit_switches();
@@ -84,35 +84,38 @@ void setup() {
 // recheck main loop
 void loop() {
 
-    checkSerial(false); // Check for serial commands without blocking
-    checkDrawers();
 
-    if (!isPaused) { 
-        detectedColor = readColor();
-        delay(10);
-        checkSortingConditions();
 
-        switch (detectedColor) { 
-            case 1: // Background detected, no action
-                delay(30); 
-                checkSortingConditions();
-                break;
 
-            case 2: // Steel ball detected
-                processSorting(steelServo, 70);
-                break;
+    // checkSerial(false); // Check for serial commands without blocking
+    // checkDrawers();
 
-            case 3: // Brass ball detected
-                processSorting(brassServo, 70);
-                break;
+    // if (!isPaused) { 
+    //     detectedColor = readColor();
+    //     delay(10);
+    //     checkSortingConditions();
 
-            case 4: // Nylon ball detected (not sorted by servo)
-                processSorting(steelServo, 0); // Keep all servos closed
-                break;
-        }
-    } else {
-        checkSortingConditions();
-    }
+    //     switch (detectedColor) { 
+    //         case 1: // Background detected, no action
+    //             delay(30); 
+    //             checkSortingConditions();
+    //             break;
+
+    //         case 2: // Steel ball detected
+    //             processSorting(steelServo, 70);
+    //             break;
+
+    //         case 3: // Brass ball detected
+    //             processSorting(brassServo, 70);
+    //             break;
+
+    //         case 4: // Nylon ball detected (not sorted by servo)
+    //             processSorting(steelServo, 0); // Keep all servos closed
+    //             break;
+    //     }
+    // } else {
+    //     checkSortingConditions();
+    // }
 }
 
 int init_color_sens() {
